@@ -21,15 +21,15 @@
         <el-dropdown trigger="click">
           <span class="menu-title position-relative px-5">
             <span
-              class="fs-6 rounded bg-light  px-5 py-3   translate-middle-y top-50 end-0"
+              class="fs-6 rounded bg-light px-5 py-3 translate-middle-y top-50 end-0"
             >
-               <img
+              <img
                 class="w-15px h-15px rounded-1 ms-2 mx-2"
                 :src="currentLangugeLocale.flag"
                 alt="metronic"
               />
               {{ currentLangugeLocale.name }}
-           <i class="bi bi-chevron-down "></i>
+              <i class="bi bi-chevron-down"></i>
             </span>
           </span>
           <template #dropdown>
@@ -58,8 +58,15 @@
       class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
       style="background-image: url('/media/misc/auth-bg.png')"
     >
+      <div
+        class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100"
+        v-if="$route.name === 'sign-in'"
+      >
+        <QrCode />
+      </div>
       <!--begin::Content-->
       <div
+        v-else
         class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100"
       >
         <!--begin::Logo-->
@@ -119,10 +126,11 @@ import LayoutService from "@/core/services/LayoutService";
 import { useBodyStore } from "@/stores/body";
 
 import ChangeLang from "@/components/shared/ChangeLang.vue";
+import QrCode from "@/components/qr-code/index.vue";
 
 export default defineComponent({
   name: "auth-layout",
-  components: { ChangeLang },
+  components: { ChangeLang, QrCode },
   setup() {
     const store = useBodyStore();
     const currentLangugeLocale = ref({});

@@ -14,7 +14,6 @@
             <form
               class="form w-100 mb-13"
               novalidate="novalidate"
-              data-kt-redirect-url="../../demo1/dist/index.html"
               id="kt_sing_in_two_steps_form"
             >
               <!--begin::Icon-->
@@ -51,17 +50,19 @@
                 <!--begin::Input group-->
                 <div class="d-flex flex-wrap flex-stack">
                   <input
+                    v-for="input in inputs"
+                    :id="`pin-${input.id}`"
+                    :key="input.id"
+                    :ref="`pin-${input.id}`"
+                    v-model="inputs[input.id].value"
                     type="text"
-                    name="code_1"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
+                    :name="`code_${input.id + 1}`"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
                   />
-                  <input
+                  <!--                   <input
                     type="text"
                     name="code_2"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                     value=""
@@ -69,7 +70,6 @@
                   <input
                     type="text"
                     name="code_3"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                     value=""
@@ -77,7 +77,6 @@
                   <input
                     type="text"
                     name="code_4"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                     value=""
@@ -85,7 +84,6 @@
                   <input
                     type="text"
                     name="code_5"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                     value=""
@@ -93,11 +91,10 @@
                   <input
                     type="text"
                     name="code_6"
-                    data-inputmask="'mask': '9', 'placeholder': ''"
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                     value=""
-                  />
+                  /> -->
                 </div>
                 <!--begin::Input group-->
               </div>
@@ -133,24 +130,46 @@
           <!--end::Wrapper-->
         </div>
         <!--end::Form-->
-
       </div>
       <!--end::Body-->
-
     </div>
     <!--end::Authentication - Two-stes-->
   </div>
 </template>
 
 <script>
-import { onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Swal from "sweetalert2";
 
 export default {
   name: "TwoStep",
+  props: {
+    inputCount: {
+      type: Number,
+      required: false,
+      default: 4,
+    },
+  },
   setup() {
+    const inputs = ref([]);
+    setInputFields();
     onMounted(() => {
       KTSigninTwoSteps().init();
+    });
+    function setInputFields() {
+      for (let i = 0; i < 6; i++) {
+        inputs.value.push({
+          id: i,
+          value: "",
+        });
+      }
+    }
+    const pinNumber = computed(() => {
+      let output = "";
+      inputs.value.forEach((input) => {
+        output += input.value;
+      });
+      return output;
     });
     function KTSigninTwoSteps() {
       // Elements
@@ -286,6 +305,10 @@ export default {
         },
       };
     }
+    return {
+      inputs,
+      pinNumber
+    };
   },
 };
 </script>
