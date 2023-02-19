@@ -4,11 +4,7 @@ import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
 export interface User {
-  name: string;
-  surname: string;
-  email: string;
-  password: string;
-  api_token: string;
+  id: string;
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -35,7 +31,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function login(credentials: User) {
-    return ApiService.post("login", credentials)
+    return ApiService.post("/v1/oauth/sign", credentials)
       .then(({ data }) => {
         setAuth(data);
       })
@@ -83,6 +79,26 @@ export const useAuthStore = defineStore("auth", () => {
       purgeAuth();
     }
   }
+  function fetchQr() {
+    return ApiService.get("/v1/oauth/qr")
+      .then(({ data }) => {
+        setError({});
+        return data;
+      })
+      .catch(({ response }) => {
+        setError(response.data.errors);
+      });
+  }
+  function verifyQr(payload: Object) {
+    return ApiService.post("/v1/oauth/qr/authorize",payload)
+      .then(({ data }) => {
+        setError({});
+        return data;
+      })
+      .catch(({ response }) => {
+        setError(response.data.errors);
+      });
+  }
 
   return {
     errors,
@@ -93,5 +109,7 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     forgotPassword,
     verifyAuth,
+    fetchQr,
+    verifyQr
   };
 });
