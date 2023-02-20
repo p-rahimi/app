@@ -21,6 +21,9 @@ ADD . .
 # Build project
 RUN npm run build
 
+# Generate public assets
+RUN npm run generate
+
 # nginx production environment
 FROM nginx:stable-alpine AS deploy
 
