@@ -25,7 +25,6 @@ const app = createApp(App);
 app.use(ElementPlus, {
   locale: lang.default,
 });
-app.use(createPinia());
 app.use(router);
 
 ApiService.init(app);
@@ -39,4 +38,4 @@ app.directive("tooltip", (el) => {
   new Tooltip(el);
 });
 
-app.mount("#app");
+app.use(createPinia()).mount("#app");
