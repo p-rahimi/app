@@ -3,20 +3,21 @@ import { defineStore } from "pinia";
 import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
+// interface User 
 export interface User {
   access_token: String;
-  avatar: null;
-  country: null;
+  avatar: String;
+  country: String;
   email: String;
-  first_name: null;
-  language: null;
+  first_name: String;
+  language: String;
   last_connection: String;
-  last_name: null;
-  middle_name: null;
-  mobile: null;
-  phone_number: null;
-  private: null;
-  timezone: null;
+  last_name: String;
+  middle_name: String;
+  mobile: String;
+  phone_number: String;
+  private: String;
+  timezone: String;
   token_type: String;
 }
 

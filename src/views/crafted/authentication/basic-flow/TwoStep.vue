@@ -213,37 +213,6 @@ export default {
                 });
               }
             });
-
-            /* // Simulate ajax request
-            setTimeout(function () {
-              // Hide loading indication
-              submitButton.removeAttribute("data-kt-indicator");
-
-              // Enable button
-              submitButton.disabled = false;
-
-              // Show message popup. For more info check the plugin's official documentation: https://sweetalert2.github.io/
-              Swal.fire({
-                text: "You have been successfully verified!",
-                icon: "success",
-                buttonsStyling: false,
-                confirmButtonText: "Ok, got it!",
-                customClass: {
-                  confirmButton: "btn btn-primary",
-                },
-              }).then(function (result) {
-                if (result.isConfirmed) {
-                  inputs.map(function (input) {
-                    input.value = "";
-                  });
-
-                  var redirectUrl = form.getAttribute("data-kt-redirect-url");
-                  if (redirectUrl) {
-                    location.href = redirectUrl;
-                  }
-                }
-              });
-            }, 1000); */
           } else {
             Swal.fire({
               text: "Please enter valid securtiy code and try again.",
@@ -253,9 +222,7 @@ export default {
               customClass: {
                 confirmButton: "btn fw-bold btn-light-primary",
               },
-            }).then(function () {
-              /*  KTUtil.scrollTop(); */
-            });
+            })
           }
         });
       };
