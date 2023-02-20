@@ -126,24 +126,14 @@ export default defineComponent({
       }
 
       // Send login request
-      await store.login(values);
-      console.log(values);
+      const res = await store.login(values);
+
+      // error handling from server side validation
       const error = Object.values(store.errors);
 
-      if (error.length === 0) {
-        Swal.fire({
-          text: "You have successfully logged in!",
-          icon: "success",
-          buttonsStyling: false,
-          confirmButtonText: "Ok, got it!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
-          },
-        }).then(() => {
-          // Go to page after successfully login
-          router.push({ name: "dashboard" });
-        });
+      if (res.succeed === true) {
+        // Go to page after successfully login
+        router.push({ name: "two-step", query: { id: values.id } });
       } else {
         Swal.fire({
           text: error[0] as string,

@@ -36,15 +36,22 @@
                 </div>
                 <!--end::Sub-title-->
                 <!--begin::Mobile no-->
-                <div class="fw-bold text-dark fs-3">******7859</div>
+                <div class="fw-bold text-dark fs-3">{{ $route.query.id }}</div>
                 <!--end::Mobile no-->
               </div>
               <!--end::Heading-->
               <!--begin::Section-->
               <div class="mb-10">
                 <!--begin::Label-->
-                <div class="fw-bold text-start text-dark fs-6 mb-1 ms-1">
-                  Type your 6 digit security code
+                <div
+                  class="fw-bold d-flex flex-row justify-content-between text-start text-dark fs-6 mb-1 ms-1"
+                >
+                  <div>Type your 6 digit security code</div>
+
+                  <!-- Clear Input -->
+                  <div class="text-primary cursor-pointer" @click="clearInputs">
+                    Clear
+                  </div>
                 </div>
                 <!--end::Label-->
                 <!--begin::Input group-->
@@ -60,41 +67,6 @@
                     maxlength="1"
                     class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
                   />
-                  <!--                   <input
-                    type="text"
-                    name="code_2"
-                    maxlength="1"
-                    class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
-                  />
-                  <input
-                    type="text"
-                    name="code_3"
-                    maxlength="1"
-                    class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
-                  />
-                  <input
-                    type="text"
-                    name="code_4"
-                    maxlength="1"
-                    class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
-                  />
-                  <input
-                    type="text"
-                    name="code_5"
-                    maxlength="1"
-                    class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
-                  />
-                  <input
-                    type="text"
-                    name="code_6"
-                    maxlength="1"
-                    class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2"
-                    value=""
-                  /> -->
                 </div>
                 <!--begin::Input group-->
               </div>
@@ -140,7 +112,8 @@
 <script>
 import { computed, onMounted, ref } from "vue";
 import Swal from "sweetalert2";
-
+import { useAuthStore } from "@/stores/auth";
+import { useRouter, useRoute } from "vue-router";
 export default {
   name: "TwoStep",
   props: {
@@ -151,6 +124,10 @@ export default {
     },
   },
   setup() {
+    const store = useAuthStore();
+    const router = useRouter();
+    const route = useRoute();
+
     const inputs = ref([]);
     setInputFields();
     onMounted(() => {
@@ -171,20 +148,27 @@ export default {
       });
       return output;
     });
+
+    function clearInputs() {
+      inputs.value.forEach((input) => {
+        input.value = "";
+      });
+    }
+
     function KTSigninTwoSteps() {
       // Elements
-      var form;
-      var submitButton;
+      let form;
+      let submitButton;
 
       // Handle form
-      var handleForm = function (e) {
+      let handleForm = (e) => {
         // Handle form submit
         submitButton.addEventListener("click", function (e) {
           e.preventDefault();
 
-          var validated = true;
+          let validated = true;
 
-          var inputs = [].slice.call(
+          let inputs = [].slice.call(
             form.querySelectorAll('input[maxlength="1"]')
           );
           inputs.map(function (input) {
@@ -201,6 +185,48 @@ export default {
             submitButton.disabled = true;
 
             // Simulate ajax request
+            const payload = {
+              id: route.query.id,
+              code: pinNumber.value,
+            };
+            store.verifyTwoStep(payload).then((res) => {
+              console.log(payload);
+              console.log(res);
+
+              // Hide loading indication
+              submitButton.removeAttribute("data-kt-indicator");
+
+              // Enable button
+              submitButton.disabled = false;
+              if (res?.succeed === true) {
+                /*  Swal.fire({
+                  text: "You have successfully logged in!",
+                  icon: "success",
+                  buttonsStyling: false,
+                  confirmButtonText: "Ok, got it!",
+                  heightAuto: false,
+                  customClass: {
+                    confirmButton: "btn fw-semobold btn-light-primary",
+                  },
+                }).then(() => {
+                  // Go to page after successfully login
+                  router.push({ name: "two-step", query: { id: values.id } });
+                }); */
+              } else {
+                Swal.fire({
+                  text: res.message,
+                  icon: "error",
+                  buttonsStyling: false,
+                  confirmButtonText: "Try again!",
+                  heightAuto: false,
+                  customClass: {
+                    confirmButton: "btn fw-semobold btn-light-danger",
+                  },
+                });
+              }
+            });
+
+            /* // Simulate ajax request
             setTimeout(function () {
               // Hide loading indication
               submitButton.removeAttribute("data-kt-indicator");
@@ -229,7 +255,7 @@ export default {
                   }
                 }
               });
-            }, 1000);
+            }, 1000); */
           } else {
             Swal.fire({
               text: "Please enter valid securtiy code and try again.",
@@ -307,7 +333,8 @@ export default {
     }
     return {
       inputs,
-      pinNumber
+      pinNumber,
+      clearInputs,
     };
   },
 };

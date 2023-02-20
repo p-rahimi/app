@@ -33,7 +33,8 @@ export const useAuthStore = defineStore("auth", () => {
   function login(credentials: User) {
     return ApiService.post("/v1/oauth/sign", credentials)
       .then(({ data }) => {
-        setAuth(data);
+        setError({});
+        return data;
       })
       .catch(({ response }) => {
         setError(response.data.errors);
@@ -90,13 +91,27 @@ export const useAuthStore = defineStore("auth", () => {
       });
   }
   function verifyQr(payload: Object) {
-    return ApiService.post("/v1/oauth/qr/authorize",payload)
+    return ApiService.post("/v1/oauth/qr/authorize", payload)
       .then(({ data }) => {
         setError({});
         return data;
       })
       .catch(({ response }) => {
         setError(response.data.errors);
+      });
+  }
+
+  function verifyTwoStep(payload: Object) {
+    return ApiService.post("/v1/oauth/verify", payload)
+      .then(({ data }) => {
+        /* setAuth(data); */
+        console.log(data)
+        return data;
+      })
+      .catch(({ response }) => {
+        setError(response.data);
+        return response.data;
+
       });
   }
 
@@ -110,6 +125,7 @@ export const useAuthStore = defineStore("auth", () => {
     forgotPassword,
     verifyAuth,
     fetchQr,
-    verifyQr
+    verifyQr,
+    verifyTwoStep,
   };
 });
