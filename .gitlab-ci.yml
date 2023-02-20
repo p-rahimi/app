@@ -29,18 +29,18 @@ deploy:
   script:
     - helm upgrade --install 
       "${CI_PROJECT_NAME}.main"
-      --namespace trader4-web
-      --set name="web-prod"
-      --set domainName="trader4.net"
+      --namespace trader4-app
+      --set name="app-prod"
+      --set domainName="app.trader4.net"
       --set image.repository="${IMG_NAME}"
       --set image.tag="${IMG_TAG}"
       --set tls.enabled="true"
-      --set tls.secretName="web-prod-tls"
+      --set tls.secretName="app-trader4-net-prod-tls"
       --create-namespace
       .ci/chart
   environment:
     name: review/$CI_COMMIT_REF_NAME
-    url: https://trader4.net
+    url: https://app.trader4.net
   only:
     - main
   needs: ["build"]
@@ -51,18 +51,18 @@ deploy_next:
   script:
     - helm upgrade --install 
       "${CI_PROJECT_NAME}.next"
-      --namespace trader4-web
-      --set name="web-next"
-      --set domainName="next.trader4.net"
+      --namespace trader4-app
+      --set name="app-next"
+      --set domainName="next-app.trader4.net"
       --set image.repository="${IMG_NAME}"
       --set image.tag="${IMG_TAG}"
       --set tls.enabled="true"
-      --set tls.secretName="web-next-tls"
+      --set tls.secretName="app-trader4-net-next-tls"
       --create-namespace
       .ci/chart
   environment:
     name: review/$CI_COMMIT_REF_NAME
-    url: https://next.trader4.net
+    url: https://next-app.trader4.net
   only:
     - next
   needs: ["build"]
