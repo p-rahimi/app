@@ -199,19 +199,7 @@ export default {
               // Enable button
               submitButton.disabled = false;
               if (res?.succeed === true) {
-                /*  Swal.fire({
-                  text: "You have successfully logged in!",
-                  icon: "success",
-                  buttonsStyling: false,
-                  confirmButtonText: "Ok, got it!",
-                  heightAuto: false,
-                  customClass: {
-                    confirmButton: "btn fw-semobold btn-light-primary",
-                  },
-                }).then(() => {
-                  // Go to page after successfully login
-                  router.push({ name: "two-step", query: { id: values.id } });
-                }); */
+                router.push({ name: "dashboard" });
               } else {
                 Swal.fire({
                   text: res.message,

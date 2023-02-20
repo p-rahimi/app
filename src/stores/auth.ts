@@ -4,7 +4,20 @@ import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
 export interface User {
-  id: string;
+  access_token: String;
+  avatar: null;
+  country: null;
+  email: String;
+  first_name: null;
+  language: null;
+  last_connection: String;
+  last_name: null;
+  middle_name: null;
+  mobile: null;
+  phone_number: null;
+  private: null;
+  timezone: null;
+  token_type: String;
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -12,11 +25,11 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<User>({} as User);
   const isAuthenticated = ref(!!JwtService.getToken());
 
-  function setAuth(authUser: User) {
+  function setAuth({ results }) {
     isAuthenticated.value = true;
-    user.value = authUser;
+    user.value = results;
     errors.value = {};
-    JwtService.saveToken(user.value.api_token);
+    JwtService.saveToken(user.value.access_token as string);
   }
 
   function setError(error: any) {
@@ -104,14 +117,13 @@ export const useAuthStore = defineStore("auth", () => {
   function verifyTwoStep(payload: Object) {
     return ApiService.post("/v1/oauth/verify", payload)
       .then(({ data }) => {
-        /* setAuth(data); */
-        console.log(data)
+        setAuth(data);
+        console.log(data);
         return data;
       })
       .catch(({ response }) => {
         setError(response.data);
         return response.data;
-
       });
   }
 
