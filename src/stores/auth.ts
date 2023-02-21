@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
-// interface User 
+// interface User
 export interface User {
   access_token: String;
   avatar: String;
@@ -107,6 +107,9 @@ export const useAuthStore = defineStore("auth", () => {
   function verifyQr(payload: Object) {
     return ApiService.post("/v1/oauth/qr", payload)
       .then(({ data }) => {
+        if (data.succeed === true) {
+          setAuth(data);
+        }
         setError({});
         return data;
       })
@@ -119,7 +122,6 @@ export const useAuthStore = defineStore("auth", () => {
     return ApiService.post("/v1/oauth/verify", payload)
       .then(({ data }) => {
         setAuth(data);
-        console.log(data);
         return data;
       })
       .catch(({ response }) => {

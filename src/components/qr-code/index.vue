@@ -38,14 +38,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 
 import Swal from "sweetalert2";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
-import moment from "moment";
-
 interface QrCode {
   expired_at: String;
   token: String;
@@ -94,10 +92,11 @@ export default defineComponent({
       }
       if (res.succeed) {
         qrCode.value = res.results;
-        clearInterval(interval);
+        clearAllIntervals();
 
+        // function to check the remaining time and stop the interval
         checkTimer();
-        submitQrCode();
+        sendQrCodeInterval();
       }
     };
     // Timer for refresh QR code
@@ -109,9 +108,9 @@ export default defineComponent({
       interval = setInterval(function () {
         if (
           new Date().getTime() - startTime > // current time - start time = elapsed time
-          new Date(expireTime as string).getTime() - startTime  // expired time - start time = remaining time
+          new Date(expireTime as string).getTime() - startTime // expired time - start time = remaining time
         ) {
-          clearInterval(interval); //stop the interval
+          clearAllIntervals(); //stop the interval
           refreshQr.value = true; //show refresh button
           return;
         }
@@ -124,15 +123,25 @@ export default defineComponent({
         token: qrCode.value.token,
       };
       const res = await store.verifyQr(payload);
-      console.log(res);
+      if (res.succeed) {
+        router.push({ name: "dashboard" });
+      }
     };
 
     let intervalSendCode = null as any;
     const sendQrCodeInterval = () => {
       intervalSendCode = setInterval(function () {
-        console.log("send code");
-      }, 2000);
+        submitQrCode();
+      }, 10000);
     };
+
+    const clearAllIntervals = () => {
+      clearInterval(interval);
+      clearInterval(intervalSendCode);
+    };
+    onUnmounted(() => {
+      clearAllIntervals();
+    });
 
     return {
       qrCode,
@@ -148,7 +157,7 @@ export default defineComponent({
   position: absolute;
   left: 35%;
   top: 46%;
-  i{
+  i {
     font-size: 6rem;
   }
 }
