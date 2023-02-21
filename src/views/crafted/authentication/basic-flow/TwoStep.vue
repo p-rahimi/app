@@ -190,14 +190,6 @@ export default {
               code: pinNumber.value,
             };
             store.verifyTwoStep(payload).then((res) => {
-              console.log(payload);
-              console.log(res);
-
-              // Hide loading indication
-              submitButton.removeAttribute("data-kt-indicator");
-
-              // Enable button
-              submitButton.disabled = false;
               if (res?.succeed === true) {
                 router.push({ name: "dashboard" });
               } else {
@@ -212,6 +204,13 @@ export default {
                   },
                 });
               }
+              setTimeout(() => {
+                // Hide loading indication
+                submitButton.removeAttribute("data-kt-indicator");
+
+                // Enable button
+                submitButton.disabled = false;
+              }, 1000);
             });
           } else {
             Swal.fire({
@@ -222,7 +221,7 @@ export default {
               customClass: {
                 confirmButton: "btn fw-bold btn-light-primary",
               },
-            })
+            });
           }
         });
       };
