@@ -1,5 +1,8 @@
 <template>
-  <div class="d-flex flex-column justify-content-center">
+  <div
+    class="d-flex flex-column justify-content-center"
+    style="position: relative"
+  >
     <!--begin::Heading-->
     <div class="text-center mb-10">
       <!--begin::Title-->
@@ -12,18 +15,23 @@
       <img
         v-if="!loading"
         :src="qrCode.url"
+        :style="refreshQr ? 'opacity:0.25' : ''"
         style="width: 250px; height: 250px"
         class="mx-auto"
         alt="qr-code"
       />
-      <div v-else class="spinner-border text-light mx-auto my-5" role="status">
+      <div
+        v-else
+        class="absolute spinner-border text-light mx-auto my-5"
+        role="status"
+      >
         <span class="visually-hidden">Loading...</span>
       </div>
     </section>
 
-    <div class="mx-auto my-3" v-if="refreshQr">
+    <div class="mx-auto my-3 refresh-icon" v-if="refreshQr">
       <i
-        class="bi bi-arrow-clockwise text-light fs-1 cursor-pointer"
+        class="bi bi-arrow-clockwise text-light cursor-pointer"
         @click="fetchQr"
       ></i>
     </div>
@@ -38,6 +46,11 @@ import { useAuthStore, type User } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import moment from "moment";
 
+interface QrCode {
+  expired_at: String;
+  token: String;
+  url: String;
+}
 export default defineComponent({
   components: {
     Field,
@@ -47,7 +60,7 @@ export default defineComponent({
   setup() {
     const store = useAuthStore();
     const router = useRouter();
-    const qrCode = ref({});
+    const qrCode = ref({} as QrCode);
     const loading = ref(false);
 
     // Fetch QR Code on mounted
@@ -84,24 +97,41 @@ export default defineComponent({
         clearInterval(interval);
 
         checkTimer();
+        submitQrCode();
       }
     };
-
     // Timer for refresh QR code
-
     let interval = null as any;
     const refreshQr = ref(false);
     const checkTimer = () => {
       const startTime = new Date().getTime();
+      const expireTime = qrCode.value.expired_at;
       interval = setInterval(function () {
-        if (new Date().getTime() - startTime > 10000) {
+        if (
+          new Date().getTime() - startTime > // current time - start time = elapsed time
+          new Date(expireTime as string).getTime() - startTime  // expired time - start time = remaining time
+        ) {
           clearInterval(interval); //stop the interval
           refreshQr.value = true; //show refresh button
-          console.log("refresh");
           return;
         }
-        console.log("check");
       }, 1000);
+    };
+
+    // Submit QR Code
+    const submitQrCode = async () => {
+      const payload = {
+        token: qrCode.value.token,
+      };
+      const res = await store.verifyQr(payload);
+      console.log(res);
+    };
+
+    let intervalSendCode = null as any;
+    const sendQrCodeInterval = () => {
+      intervalSendCode = setInterval(function () {
+        console.log("send code");
+      }, 2000);
     };
 
     return {
@@ -113,3 +143,13 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss">
+.refresh-icon {
+  position: absolute;
+  left: 35%;
+  top: 46%;
+  i{
+    font-size: 6rem;
+  }
+}
+</style>

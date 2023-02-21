@@ -105,7 +105,7 @@ export const useAuthStore = defineStore("auth", () => {
       });
   }
   function verifyQr(payload: Object) {
-    return ApiService.post("/v1/oauth/qr/authorize", payload)
+    return ApiService.post("/v1/oauth/qr", payload)
       .then(({ data }) => {
         setError({});
         return data;
