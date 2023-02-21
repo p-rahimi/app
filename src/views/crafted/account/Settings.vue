@@ -143,32 +143,7 @@
           </div>
           <!--end::Input group-->
 
-          <!--begin::Input group-->
-          <div class="row mb-6">
-            <!--begin::Label-->
-            <label class="col-lg-4 col-form-label required fw-semobold fs-6"
-              >Company</label
-            >
-            <!--end::Label-->
 
-            <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
-              <Field
-                type="text"
-                name="company"
-                class="form-control form-control-lg form-control-solid"
-                placeholder="Company name"
-                v-model="profileDetails.company"
-              />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
-                  <ErrorMessage name="company" />
-                </div>
-              </div>
-            </div>
-            <!--end::Col-->
-          </div>
-          <!--end::Input group-->
 
           <!--begin::Input group-->
           <div class="row mb-6">
@@ -203,32 +178,6 @@
           </div>
           <!--end::Input group-->
 
-          <!--begin::Input group-->
-          <div class="row mb-6">
-            <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semobold fs-6"
-              >Company Site</label
-            >
-            <!--end::Label-->
-
-            <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
-              <Field
-                type="text"
-                name="website"
-                class="form-control form-control-lg form-control-solid"
-                placeholder="Company website"
-                v-model="profileDetails.companySite"
-              />
-              <div class="fv-plugins-message-container">
-                <div class="fv-help-block">
-                  <ErrorMessage name="website" />
-                </div>
-              </div>
-            </div>
-            <!--end::Col-->
-          </div>
-          <!--end::Input group-->
 
           <!--begin::Input group-->
           <div class="row mb-6">
@@ -1111,69 +1060,9 @@
           </div>
           <!--end::Input group-->
 
-          <!--begin::Input group-->
-          <div class="row mb-6">
-            <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semobold fs-6"
-              >Communication</label
-            >
-            <!--end::Label-->
 
-            <!--begin::Col-->
-            <div class="col-lg-8 fv-row">
-              <!--begin::Options-->
-              <div class="d-flex align-items-center mt-3">
-                <!--begin::Option-->
-                <label
-                  class="form-check form-check-inline form-check-solid me-5"
-                >
-                  <input
-                    class="form-check-input"
-                    name="communication[]"
-                    type="checkbox"
-                  />
-                  <span class="fw-semobold ps-2 fs-6"> Email </span>
-                </label>
-                <!--end::Option-->
 
-                <!--begin::Option-->
-                <label class="form-check form-check-inline form-check-solid">
-                  <input
-                    class="form-check-input"
-                    name="communication[]"
-                    type="checkbox"
-                  />
-                  <span class="fw-semobold ps-2 fs-6"> Phone </span>
-                </label>
-                <!--end::Option-->
-              </div>
-              <!--end::Options-->
-            </div>
-            <!--end::Col-->
-          </div>
-          <!--end::Input group-->
 
-          <!--begin::Input group-->
-          <div class="row mb-0">
-            <!--begin::Label-->
-            <label class="col-lg-4 col-form-label fw-semobold fs-6"
-              >Allow Marketing</label
-            >
-            <!--begin::Label-->
-
-            <!--begin::Label-->
-            <div class="col-lg-8 d-flex align-items-center">
-              <div class="form-check form-check-solid form-switch fv-row">
-                <input
-                  class="form-check-input w-45px h-30px"
-                  type="checkbox"
-                  id="allowmarketing"
-                />
-                <label class="form-check-label" for="allowmarketing"></label>
-              </div>
-            </div>
-            <!--begin::Label-->
-          </div>
           <!--end::Input group-->
         </div>
         <!--end::Card body-->
@@ -2289,9 +2178,7 @@ export default defineComponent({
     const profileDetailsValidator = Yup.object().shape({
       fname: Yup.string().required().label("First name"),
       lname: Yup.string().required().label("Last name"),
-      company: Yup.string().required().label("Company"),
       phone: Yup.string().required().label("Contact phone"),
-      website: Yup.string().label("Webside"),
       country: Yup.string().required().label("Country"),
       language: Yup.string().required().label("Language"),
       timezone: Yup.string().required().label("Timezone"),

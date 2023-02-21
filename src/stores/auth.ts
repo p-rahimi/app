@@ -3,8 +3,22 @@ import { defineStore } from "pinia";
 import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
+// interface User
 export interface User {
-  id: string;
+  access_token: String;
+  avatar: String;
+  country: String;
+  email: String;
+  first_name: String;
+  language: String;
+  last_connection: String;
+  last_name: String;
+  middle_name: String;
+  mobile: String;
+  phone_number: String;
+  private: String;
+  timezone: String;
+  token_type: String;
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -12,11 +26,11 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<User>({} as User);
   const isAuthenticated = ref(!!JwtService.getToken());
 
-  function setAuth(authUser: User) {
+  function setAuth({ results }) {
     isAuthenticated.value = true;
-    user.value = authUser;
+    user.value = results;
     errors.value = {};
-    JwtService.saveToken(user.value.api_token);
+    JwtService.saveToken(user.value.access_token as string);
   }
 
   function setError(error: any) {
@@ -33,7 +47,8 @@ export const useAuthStore = defineStore("auth", () => {
   function login(credentials: User) {
     return ApiService.post("/v1/oauth/sign", credentials)
       .then(({ data }) => {
-        setAuth(data);
+        setError({});
+        return data;
       })
       .catch(({ response }) => {
         setError(response.data.errors);
@@ -90,13 +105,28 @@ export const useAuthStore = defineStore("auth", () => {
       });
   }
   function verifyQr(payload: Object) {
-    return ApiService.post("/v1/oauth/qr/authorize",payload)
+    return ApiService.post("/v1/oauth/qr", payload)
       .then(({ data }) => {
+        if (data.succeed === true) {
+          setAuth(data);
+        }
         setError({});
         return data;
       })
       .catch(({ response }) => {
         setError(response.data.errors);
+      });
+  }
+
+  function verifyTwoStep(payload: Object) {
+    return ApiService.post("/v1/oauth/verify", payload)
+      .then(({ data }) => {
+        setAuth(data);
+        return data;
+      })
+      .catch(({ response }) => {
+        setError(response.data);
+        return response.data;
       });
   }
 
@@ -110,6 +140,7 @@ export const useAuthStore = defineStore("auth", () => {
     forgotPassword,
     verifyAuth,
     fetchQr,
-    verifyQr
+    verifyQr,
+    verifyTwoStep,
   };
 });
