@@ -143,8 +143,6 @@
           </div>
           <!--end::Input group-->
 
-
-
           <!--begin::Input group-->
           <div class="row mb-6">
             <!--begin::Label-->
@@ -177,7 +175,6 @@
             <!--end::Col-->
           </div>
           <!--end::Input group-->
-
 
           <!--begin::Input group-->
           <div class="row mb-6">
@@ -486,52 +483,14 @@
                 class="form-select form-select-solid form-select-lg"
                 v-model="profileDetails.language"
               >
-                <option value="id">Bahasa Indonesia - Indonesian</option>
-                <option value="msa">Bahasa Melayu - Malay</option>
-                <option value="ca">Català - Catalan</option>
-                <option value="cs">Čeština - Czech</option>
-                <option value="da">Dansk - Danish</option>
-                <option value="de">Deutsch - German</option>
-                <option value="en">English</option>
-                <option value="en-gb">English UK - British English</option>
-                <option value="es">Español - Spanish</option>
-                <option value="fil">Filipino</option>
-                <option value="fr">Français - French</option>
-                <option value="ga">Gaeilge - Irish (beta)</option>
-                <option value="gl">Galego - Galician (beta)</option>
-                <option value="hr">Hrvatski - Croatian</option>
-                <option value="it">Italiano - Italian</option>
-                <option value="hu">Magyar - Hungarian</option>
-                <option value="nl">Nederlands - Dutch</option>
-                <option value="no">Norsk - Norwegian</option>
-                <option value="pl">Polski - Polish</option>
-                <option value="pt">Português - Portuguese</option>
-                <option value="ro">Română - Romanian</option>
-                <option value="sk">Slovenčina - Slovak</option>
-                <option value="fi">Suomi - Finnish</option>
-                <option value="sv">Svenska - Swedish</option>
-                <option value="vi">Tiếng Việt - Vietnamese</option>
-                <option value="tr">Türkçe - Turkish</option>
-                <option value="el">Ελληνικά - Greek</option>
-                <option value="bg">Български език - Bulgarian</option>
-                <option value="ru">Русский - Russian</option>
-                <option value="sr">Српски - Serbian</option>
-                <option value="uk">Українська мова - Ukrainian</option>
-                <option value="he">עִבְרִית - Hebrew</option>
-                <option value="ur">اردو - Urdu (beta)</option>
-                <option value="ar">العربية - Arabic</option>
-                <option value="fa">فارسی - Persian</option>
-                <option value="mr">मराठी - Marathi</option>
-                <option value="hi">हिन्दी - Hindi</option>
-                <option value="bn">বাংলা - Bangla</option>
-                <option value="gu">ગુજરાતી - Gujarati</option>
-                <option value="ta">தமிழ் - Tamil</option>
-                <option value="kn">ಕನ್ನಡ - Kannada</option>
-                <option value="th">ภาษาไทย - Thai</option>
-                <option value="ko">한국어 - Korean</option>
-                <option value="ja">日本語 - Japanese</option>
-                <option value="zh-cn">简体中文 - Simplified Chinese</option>
-                <option value="zh-tw">繁體中文 - Traditional Chinese</option>
+                <option
+                  :value="name"
+                  v-for="(item, name) in ISOLanguage"
+                  :key="name"
+                >
+                  {{ truncate(item.native[0], 20) }} -
+                  {{ truncate(item.english[0], 20) }} ({{ name }})
+                </option>
               </Field>
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
@@ -1034,21 +993,14 @@
                 class="form-select form-select-solid form-select-lg"
                 v-model="profileDetails.currency"
               >
-                <option value="USD"><b>USD</b>&#160;-&#160;USA dollar</option>
-                <option value="GBP">
-                  <b>GBP</b>&#160;-&#160;British pound
+                <option
+                  :value="name"
+                  v-for="(item, name) in ISOCurrencies"
+                  :key="name"
+                >
+                  {{ truncate(item.demonym, 20) }} -
+                  {{ truncate(item.name, 20) }} ({{ name }})
                 </option>
-                <option value="AUD">
-                  <b>AUD</b>&#160;-&#160;Australian dollar
-                </option>
-                <option value="JPY"><b>JPY</b>&#160;-&#160;Japanese yen</option>
-                <option value="SEK">
-                  <b>SEK</b>&#160;-&#160;Swedish krona
-                </option>
-                <option value="CAD">
-                  <b>CAD</b>&#160;-&#160;Canadian dollar
-                </option>
-                <option value="CHF"><b>CHF</b>&#160;-&#160;Swiss franc</option>
               </Field>
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
@@ -1059,9 +1011,6 @@
             <!--end::Col-->
           </div>
           <!--end::Input group-->
-
-
-
 
           <!--end::Input group-->
         </div>
@@ -2137,7 +2086,9 @@ import { defineComponent, ref } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-
+import ISOLanguage from "@/iso/ISO_639-2_languages.json";
+import ISOCurrencies from "@/iso/ISO_4217_currencies.json";
+import { string } from "yup/lib/locale";
 interface ProfileDetails {
   avatar: string;
   name: string;
@@ -2327,6 +2278,14 @@ export default defineComponent({
       profileDetails.value.avatar = "/media/avatars/blank.png";
     };
 
+    const truncate = (value: string, len: number = 40) => {
+      if (value) {
+        if (value.length > len) {
+          value = value.substring(0, len - 3) + "...";
+        }
+        return value;
+      }
+    };
     return {
       submitButton1,
       submitButton2,
@@ -2349,6 +2308,9 @@ export default defineComponent({
       updatePasswordButton,
       updateEmail,
       updatePassword,
+      ISOLanguage,
+      ISOCurrencies,
+      truncate,
     };
   },
 });
