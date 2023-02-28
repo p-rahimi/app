@@ -26,11 +26,17 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<User>({} as User);
   const isAuthenticated = ref(!!JwtService.getToken());
 
+  // check if token is still valid
+  if (isAuthenticated.value) {
+    ApiService.setHeader();
+  }
+
   function setAuth({ results }) {
     isAuthenticated.value = true;
     user.value = results;
     errors.value = {};
     JwtService.saveToken(user.value.access_token as string);
+    ApiService.setHeader();
   }
 
   function setError(error: any) {
