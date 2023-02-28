@@ -176,14 +176,46 @@
             <div class="col-lg-8 fv-row">
               <Field
                 type="tel"
-                name="phone"
+                name="mobile"
                 class="form-control form-control-lg form-control-solid"
                 placeholder="Phone number"
-                v-model="profileDetails.contactPhone"
+                v-model="profileDetails.mobile"
               />
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
-                  <ErrorMessage name="phone" />
+                  <ErrorMessage name="mobile" />
+                </div>
+              </div>
+            </div>
+            <!--end::Col-->
+          </div>
+          <!--end::Input group-->
+          <!--begin::Input group-->
+          <div class="row mb-6">
+            <!--begin::Label-->
+            <label class="col-lg-4 col-form-label fw-semobold fs-6">
+              <span class="required">Email</span>
+
+              <i
+                class="fas fa-exclamation-circle ms-1 fs-7"
+                data-bs-toggle="tooltip"
+                title="Phone number must be active"
+              ></i>
+            </label>
+            <!--end::Label-->
+
+            <!--begin::Col-->
+            <div class="col-lg-8 fv-row">
+              <Field
+                type="email"
+                name="email"
+                class="form-control form-control-lg form-control-solid"
+                placeholder="Phone number"
+                v-model="profileDetails.email"
+              />
+              <div class="fv-plugins-message-container">
+                <div class="fv-help-block">
+                  <ErrorMessage name="email" />
                 </div>
               </div>
             </div>
@@ -1414,7 +1446,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -1423,23 +1455,7 @@ import ISOCurrencies from "@/iso/ISO_4217_currencies.json";
 import ISOCountries from "@/iso/ISO-3166-countries.json";
 import Timezones from "@/iso/timezones.json";
 import { string } from "yup/lib/locale";
-interface ProfileDetails {
-  avatar: string;
-  name: string;
-  surname: string;
-  company: string;
-  contactPhone: string;
-  companySite: string;
-  country: string;
-  language: string;
-  timezone: string;
-  currency: string;
-  communications: {
-    email: boolean;
-    phone: boolean;
-  };
-  allowMarketing: boolean;
-}
+import { useAccountStore, type Account } from "@/stores/account";
 
 export default defineComponent({
   name: "account-settings",
@@ -1449,7 +1465,49 @@ export default defineComponent({
     VForm,
   },
   setup() {
+    const store = useAccountStore();
+
+    // Fetch Account Details on page load
+    onMounted(() => {
+      fetchAccount();
+    });
+
+    // Fetch  Account Details
+    const profileDetails = ref<Account>({} as Account);
     const submitButton1 = ref<HTMLElement | null>(null);
+
+    const fetchAccount = async () => {
+      const res = await store.fetchAccount();
+      // set form values to account details
+      profileDetails.value = store.account;
+      const error = Object.values(store.errors);
+    };
+
+    // Validations Account Details
+    const profileDetailsValidator = Yup.object().shape({
+      first_name: Yup.string().nullable().label("First name"),
+      middle_name: Yup.string().nullable().label("First name"),
+      last_name: Yup.string().nullable().label("Last name"),
+      mobile: Yup.string().nullable().label("Contact phone"),
+      email: Yup.string().nullable().label("Email"),
+      country: Yup.string().nullable().label("Country"),
+      language: Yup.string().nullable().label("Language"),
+      timezone: Yup.string().nullable().label("Timezone"),
+      currency: Yup.string().nullable().label("Currency"),
+    });
+ 
+    const saveChanges1 = () => {
+      console.log(profileDetails.value);
+      if (submitButton1.value) {
+        // Activate indicator
+        submitButton1.value.setAttribute("data-kt-indicator", "on");
+
+        setTimeout(() => {
+          submitButton1.value?.removeAttribute("data-kt-indicator");
+        }, 2000);
+      }
+    };
+
     const submitButton2 = ref<HTMLElement | null>(null);
     const submitButton3 = ref<HTMLElement | null>(null);
     const submitButton4 = ref<HTMLElement | null>(null);
@@ -1459,17 +1517,6 @@ export default defineComponent({
 
     const emailFormDisplay = ref(false);
     const passwordFormDisplay = ref(false);
-
-    const profileDetailsValidator = Yup.object().shape({
-      first_name: Yup.string().required().label("First name"),
-      middle_name: Yup.string().required().label("First name"),
-      last_name: Yup.string().required().label("Last name"),
-      phone: Yup.string().required().label("Contact phone"),
-      country: Yup.string().required().label("Country"),
-      language: Yup.string().required().label("Language"),
-      timezone: Yup.string().required().label("Timezone"),
-      currency: Yup.string().required().label("Currency"),
-    });
 
     const changeEmail = Yup.object().shape({
       emailaddress: Yup.string().required().email().label("Email"),
@@ -1485,36 +1532,6 @@ export default defineComponent({
         .oneOf([Yup.ref("newpassword"), null], "Passwords must match")
         .label("Password Confirmation"),
     });
-
-    const profileDetails = ref<ProfileDetails>({
-      avatar: "/media/avatars/300-1.jpg",
-      name: "Max",
-      surname: "Smith",
-      company: "Keenthemes",
-      contactPhone: "044 3276 454 935",
-      companySite: "keenthemes.com",
-      country: "MY",
-      language: "msa",
-      timezone: "Kuala Lumpur",
-      currency: "USD",
-      communications: {
-        email: false,
-        phone: false,
-      },
-      allowMarketing: false,
-    });
-
-    const saveChanges1 = () => {
-      console.log(profileDetails.value);
-      if (submitButton1.value) {
-        // Activate indicator
-        submitButton1.value.setAttribute("data-kt-indicator", "on");
-
-        setTimeout(() => {
-          submitButton1.value?.removeAttribute("data-kt-indicator");
-        }, 2000);
-      }
-    };
 
     const saveChanges2 = () => {
       if (submitButton2.value) {
