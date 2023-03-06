@@ -104,7 +104,7 @@
               <!--begin::Row-->
               <div class="row">
                 <!--begin::Col-->
-                <div class="col-lg-6 fv-row">
+                <div class="col-lg-4 fv-row">
                   <Field
                     type="text"
                     name="first_name"
@@ -120,7 +120,7 @@
                 </div>
                 <!--end::Col-->
                 <!--begin::Col-->
-                <div class="col-lg-6 fv-row">
+                <div class="col-lg-4 fv-row">
                   <Field
                     type="text"
                     name="middle_name"
@@ -136,7 +136,7 @@
                 </div>
                 <!--end::Col-->
                 <!--begin::Col-->
-                <div class="col-lg-6 fv-row">
+                <div class="col-lg-4 fv-row">
                   <Field
                     type="text"
                     name="last_name"
@@ -180,6 +180,7 @@
                 class="form-control form-control-lg form-control-solid"
                 placeholder="Phone number"
                 v-model="profileDetails.mobile"
+                disabled
               />
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
@@ -212,6 +213,7 @@
                 class="form-control form-control-lg form-control-solid"
                 placeholder="Phone number"
                 v-model="profileDetails.email"
+                disabled
               />
               <div class="fv-plugins-message-container">
                 <div class="fv-help-block">
@@ -246,7 +248,7 @@
                 v-model="profileDetails.country"
               >
                 <option
-                  :value="item['alpha-2']"
+                  :value="item['alpha-3']"
                   v-for="(item, index) in ISOCountries"
                   :key="index"
                 >
@@ -1465,6 +1467,7 @@ export default defineComponent({
     VForm,
   },
   setup() {
+    //global variables for the component
     const store = useAccountStore();
 
     // Fetch Account Details on page load
@@ -1480,7 +1483,6 @@ export default defineComponent({
       const res = await store.fetchAccount();
       // set form values to account details
       profileDetails.value = store.account;
-      const error = Object.values(store.errors);
     };
 
     // Validations Account Details
@@ -1495,9 +1497,14 @@ export default defineComponent({
       timezone: Yup.string().nullable().label("Timezone"),
       currency: Yup.string().nullable().label("Currency"),
     });
- 
-    const saveChanges1 = () => {
+
+    const saveChanges1 = async () => {
       console.log(profileDetails.value);
+      const payload = profileDetails.value;
+      payload.private= profileDetails.value.private ? 1 : 0;
+      const res = await store.updateAccount(payload as Account);
+      console.log(res);
+
       if (submitButton1.value) {
         // Activate indicator
         submitButton1.value.setAttribute("data-kt-indicator", "on");

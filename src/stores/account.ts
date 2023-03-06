@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import { setError } from "./global";
 import ApiService from "@/core/services/ApiService";
 import JwtService from "@/core/services/JwtService";
 
@@ -16,20 +17,16 @@ export interface Account {
   language: string;
   timezone: string;
   last_connection: string;
-  private: string;
+  private: boolean|number;
   status: number;
   currency: string;
 }
 
 export const useAccountStore = defineStore("account", () => {
-  // state
-  const errors = ref({});
+ 
   const account = ref<Account>({} as Account);
   const isAuthenticated = ref(!!JwtService.getToken());
 
-  function setError(error: any) {
-    errors.value = { ...error };
-  }
 
   //actions
   // fetch account details
@@ -37,8 +34,20 @@ export const useAccountStore = defineStore("account", () => {
     return ApiService.get("/v1/account")
       .then(({ data }) => {
         if (data.succeed) {
-          account.value = data.results;
+          account.value = data.results as Account;
+        }else{
+          setError(data.errors);
         }
+        return data;
+      })
+      .catch(({ response }) => {
+        setError(response.data.errors);
+      });
+  }
+  // update account details
+  function updateAccount(payload: Account) {
+    return ApiService.put("/v1/account",payload)
+      .then(({ data }) => {
         setError({});
         return data;
       })
@@ -48,9 +57,9 @@ export const useAccountStore = defineStore("account", () => {
   }
 
   return {
-    errors,
     account,
     isAuthenticated,
     fetchAccount,
+    updateAccount
   };
 });
