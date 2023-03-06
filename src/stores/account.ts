@@ -48,8 +48,11 @@ export const useAccountStore = defineStore("account", () => {
   function updateAccount(payload: Account) {
     return ApiService.put("/v1/account",payload)
       .then(({ data }) => {
-        setError({});
-        return data;
+        if (data.succeed) {
+          return data
+        }else{
+          setError(data.errors);
+        }
       })
       .catch(({ response }) => {
         setError(response.data.errors);

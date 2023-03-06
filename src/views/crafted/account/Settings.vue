@@ -1499,11 +1499,12 @@ export default defineComponent({
     });
 
     const saveChanges1 = async () => {
-      console.log(profileDetails.value);
       const payload = profileDetails.value;
-      payload.private= profileDetails.value.private ? 1 : 0;
+      payload.private = profileDetails.value.private ? 1 : 0;
       const res = await store.updateAccount(payload as Account);
-      console.log(res);
+      if (res?.succeed) {
+        fetchAccount();
+      }
 
       if (submitButton1.value) {
         // Activate indicator

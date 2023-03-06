@@ -6,6 +6,7 @@ const errors = ref({});
 
 export function setError(error: any) {
   errors.value = { ...error };
+  showError()
 }
 
 function showError() {
