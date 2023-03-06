@@ -167,7 +167,7 @@
             class="w-100"
             :label="field"
             border
-            @change="checkChange"
+            @change="checkChangeEvent"
           />
         </div>
       </template>
@@ -181,15 +181,15 @@ import EditableCell from "@/components/el-table/EditableCell.vue";
 import FilterBox from "@/components/el-table/FilterBox.vue";
 import moment from "moment";
 import { themeMode } from "@/core/helpers/config";
+import { useLocalStorageFields } from "@/components/el-table/localStorageFields";
 
 const dialogVisible = ref(false);
-
 const multipleSelection = ref([]);
-
 const handleSelectionChange = (val) => {
   multipleSelection.value = val;
 };
 
+// client side search
 const search = ref("");
 const filterTableData = computed(() =>
   //@ts-ignore
@@ -199,6 +199,7 @@ const filterTableData = computed(() =>
       data.customer.toLowerCase().includes(search.value.toLowerCase())
   )
 );
+
 const handleEdit = (index: number, row) => {
   console.log(index, row);
 };
@@ -213,48 +214,22 @@ function confirmEdit(row) {
   row.edit = false;
   row.originalTitle = row.title;
 }
-let defaultFields = ref<string[]>([
-  "customer",
-  "status",
-  "billing",
-  "createdDate",
-]);
-let allFields = ref<string[]>([
-  "customer",
-  "status",
-  "billing",
-  "createdDate",
-  "id",
-  "product",
-]);
-onMounted(() => {
-  if (localStorage.getItem("custom-table-fields")) {
-    defaultFields.value = JSON.parse(
-      //@ts-ignore
-      localStorage.getItem("custom-table-fields")
-    );
-  } else {
-    //@ts-ignore
-    setLocalStorage();
-  }
-});
-function checkChange(status, { target: { value } }) {
-  if (status) {
-    //@ts-ignore
-    defaultFields.value.push(value);
-    setLocalStorage();
-  } else {
-    const findField = defaultFields.value.indexOf(value);
-    defaultFields.value.splice(findField, 1);
-    setLocalStorage();
-  }
-}
-function setLocalStorage() {
-  localStorage.setItem(
-    "custom-table-fields",
-    JSON.stringify(defaultFields.value)
-  );
-}
+
+// handel local storage fields
+const { allFields, defaultFields, localName, checkChange } =
+  useLocalStorageFields();
+// local storage name
+localName.value = "custom-table-fields";
+// default fields
+defaultFields.value = ["customer", "status", "billing", "createdDate"];
+// all fields
+allFields.value = [...defaultFields.value, "id", "product"];
+// check change
+const checkChangeEvent = (status, { target: { value } }) => {
+  checkChange(status, value);
+};
+
+// mock data
 const data = ref([
   {
     id: 1,

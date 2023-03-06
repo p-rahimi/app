@@ -26,11 +26,19 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<User>({} as User);
   const isAuthenticated = ref(!!JwtService.getToken());
 
+  // check if token is still valid on refresh
+  if (isAuthenticated.value) {
+    ApiService.setHeader();
+  }
+  
   function setAuth({ results }) {
     isAuthenticated.value = true;
     user.value = results;
     errors.value = {};
     JwtService.saveToken(user.value.access_token as string);
+    
+    // Call ApiService.setHeader() to set the header of your ajax library.
+    ApiService.setHeader();
   }
 
   function setError(error: any) {
