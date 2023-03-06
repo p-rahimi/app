@@ -36,12 +36,12 @@ export const useAccountStore = defineStore("account", () => {
         if (data.succeed) {
           account.value = data.results as Account;
         }else{
-          setError(data.errors);
+          setError(data.message);
         }
         return data;
       })
       .catch(({ response }) => {
-        setError(response.data.errors);
+        setError(response.data.message);
       });
   }
   // update account details

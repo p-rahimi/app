@@ -1,19 +1,20 @@
 import { ref } from "vue";
 import Swal from "sweetalert2";
-
+import { isArray } from "helping-js/core/types";
 // state
-const errors = ref({});
+const errors = ref('');
 
 export function setError(error: any) {
-  errors.value = { ...error };
+  errors.value = error ;
   showError()
 }
 
 function showError() {
+  console.log(errors.value);
   // error handling from server side validation
-  const error = Object.values(errors.value);
+  const text = isArray(errors.value) === true ? errors.value[0] as string : errors.value as string | any ;
   Swal.fire({
-    text: error[0] as string,
+    text: text,
     icon: "error",
     buttonsStyling: false,
     confirmButtonText: "Try again!",
@@ -22,6 +23,6 @@ function showError() {
       confirmButton: "btn fw-semobold btn-light-danger",
     },
   }).then(() => {
-    errors.value = {};
+    errors.value = '';
   });
 }
