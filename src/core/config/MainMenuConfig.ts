@@ -95,6 +95,10 @@ const MainMenuConfig: Array<MenuItem> = [
             heading: "settings",
             route: "/crafted/account/settings",
           },
+          {
+            heading: "Trading Accounts",
+            route: "/crafted/account/trading-accounts",
+          },
         ],
       },
       {
