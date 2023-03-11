@@ -145,6 +145,7 @@ const routes: Array<RouteRecordRaw> = [
             component: () => import("@/views/crafted/account/TradingAccounts.vue"),
             meta: {
               pageTitle: "Trading Accounts",
+              breadcrumbs: ["Crafted", "Trading Account"],
             },
           },
         ],
